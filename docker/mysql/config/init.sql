@@ -1,0 +1,3 @@
+CREATE USER 'lucasApp'@'%' IDENTIFIED BY 'lucas-app';
+GRANT SELECT, INSERT, UPDATE, DELETE ON *.* TO 'lucasApp'@'%';
+FLUSH PRIVILEGES;

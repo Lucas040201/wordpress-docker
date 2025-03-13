@@ -1,0 +1,60 @@
+services:
+  nginx:
+    depends_on:
+      - backend
+    image: wordpress_nginx
+    build: ./docker/nginx/
+    ports:
+      - "8080:80"
+    networks:
+      - server
+    volumes:
+      - ./www/:/var/www/html/
+      - ./logs/nginx:/var/log/nginx/
+  backend:
+    depends_on:
+      - database
+    image: wordpress_backend
+    build: ./docker/php/
+    networks:
+      - server
+      - database
+      - backend
+    volumes:
+      - ./www/:/var/www/html/
+      - ./logs/php:/var/log/
+      - ./docker/php/config/php.ini:/usr/local/etc/php/php.ini
+    deploy:
+      mode: replicated
+      replicas: 1
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 1024M
+  database:
+    image: wordpress_db
+    build: ./docker/mysql/
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_USER=app
+      - MYSQL_PASSWORD=app
+      - MYSQL_DATABASE=app
+      - MYSQL_ROOT_PASSWORD=app
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - database
+
+networks:
+  server:
+    driver: bridge
+  database:
+    name: database_network
+    driver: bridge
+  backend:
+    name: backend_network
+    driver: bridge
+
+volumes:
+  db-data:
