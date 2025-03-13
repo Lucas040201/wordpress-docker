@@ -1,3 +1,3 @@
 ./logs
 ./www/*
-!./www
+!./www/.gitkeep
